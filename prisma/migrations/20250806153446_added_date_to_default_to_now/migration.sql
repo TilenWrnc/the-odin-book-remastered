@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "public"."post" ALTER COLUMN "date" SET DEFAULT CURRENT_TIMESTAMP;

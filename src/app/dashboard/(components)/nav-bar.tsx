@@ -1,3 +1,5 @@
+"use client";
+
 import Logo from "@/app/(components)/logo";
 import { UserButton, useUser } from "@clerk/nextjs";
 import {
@@ -10,13 +12,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader, SquarePen } from "lucide-react";
-import { useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { useState } from "react";
 import { toast } from "sonner";
+import { createPost } from "../../../../prisma/post/create-post";
 
 const NavBar = () => {
-    const createPost = useMutation(api.posts.createPost);
 
     const [postText, setPostText] = useState("");
 
@@ -29,17 +29,7 @@ const NavBar = () => {
         }
 
         try {
-            if (user === undefined) {
-                return;
-            }
-
-            await createPost({
-                userId: user.id,
-                content: postText,
-                createdAt: Date.now(),
-                likes: 0,
-                comments: 0,
-            });
+            await createPost(postText, user.id);
             toast.success("Succesfully created a post")
         } catch (error) {
             console.log(error)
@@ -67,7 +57,7 @@ const NavBar = () => {
                             </DialogHeader>
                             <form onSubmit={(e) => {
                                 e.preventDefault();
-                                handleCreatePost();
+                                //handleCreatePost();
                             }}>
                                 <Textarea className="h-[250px] max-w-[30vw]" placeholder="Type your post here..." autoFocus onChange={(e) => setPostText(e.target.value)} maxLength={500}/>
                                 <Button type="submit" className="w-full mt-2">Submit</Button>

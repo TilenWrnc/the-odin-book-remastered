@@ -4,10 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { User } from "../../../convex/User";
 
 const Friends = () => {
     const allUsers = useQuery(api.users.getAllUsers);
