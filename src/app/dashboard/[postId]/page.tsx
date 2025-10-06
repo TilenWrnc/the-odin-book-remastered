@@ -27,7 +27,7 @@ interface SinglePostProps {
 }
 
 const SinglePost = async({ params } : SinglePostProps) => {
-    const { postId } = await Promise.resolve(params);
+    const { postId } = params;
     const post = await getSinglePost(Number(postId));
     const user = await currentUser();
 
