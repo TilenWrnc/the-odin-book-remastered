@@ -22,7 +22,7 @@ import getUser from "../../../../prisma/get/get-user";
 
 interface SinglePostProps {
     params: {
-        postId: { postId: string };
+        postId: string;
     }
 }
 
