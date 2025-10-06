@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import Logo from "@/app/(components)/logo";
 import { UserButton, useUser } from "@clerk/nextjs";
@@ -12,37 +12,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader, SquarePen } from "lucide-react";
-import { useState } from "react";
 import { toast } from "sonner";
-import { createPost } from "../../../../prisma/post/create-post";
+import { createPostAction } from "../../../../prisma/post/create-post";
+import { useRouter } from 'next/navigation';
+import { useState } from "react";
 
 const NavBar = () => {
+    const { isLoaded } = useUser();
 
-    const [postText, setPostText] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
 
-    const { user, isLoaded, isSignedIn } = useUser();
-
-    async function handleCreatePost() {
-        if (!isLoaded || !isSignedIn || !user) {
-            console.log("User not found")
-            return;
-        }
-
-        try {
-            await createPost(postText, user.id);
-            toast.success("Succesfully created a post")
-        } catch (error) {
-            console.log(error)
-        };
-    }
+    const router = useRouter();
 
     return ( 
         <div>
-            <nav className="bg-[#f9f9f9] p-4 flex border-b shadow-lg justify-around">
+            <nav className="bg-[#f9f9f9] p-4 flex border-b shadow-lg items-center justify-around relative">
                 <Logo/>
 
                 <div>
-                    <Dialog>
+                    <Dialog open={isOpen} onOpenChange={setIsOpen}>
                         <DialogTrigger asChild>
                             <Button >
                                 <SquarePen />
@@ -55,11 +43,19 @@ const NavBar = () => {
                                     Write a post
                                 </DialogTitle>
                             </DialogHeader>
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                //handleCreatePost();
-                            }}>
-                                <Textarea className="h-[250px] max-w-[30vw]" placeholder="Type your post here..." autoFocus onChange={(e) => setPostText(e.target.value)} maxLength={500}/>
+                            <form action={async (formData) => {
+                                try {
+                                    await createPostAction(formData);
+                                    toast.success("Post created");
+                                    setIsOpen(false);
+                                    router.refresh();
+                                } catch (err) {
+                                    console.error(err);
+                                    toast.error("Failed to create post");
+                                }
+                            }}
+                            >
+                                <Textarea className="h-[250px] max-w-[30vw]" placeholder="Type your post here..." autoFocus maxLength={500} name="post-content" required/>
                                 <Button type="submit" className="w-full mt-2">Submit</Button>
                             </form>
                         </DialogContent>
@@ -67,7 +63,7 @@ const NavBar = () => {
                 </div>
                 
 
-                <div className="w-70">
+                <div>
                     {!isLoaded ? (
                         <div className="flex justify-center items-center">        
                             <Loader className="size-5 animate-spin" />
@@ -79,8 +75,8 @@ const NavBar = () => {
                                 avatarBox: {
                                     height: 35,
                                     width: 35,
-                                    border: "3px solid gray",
-                                    padding: "2px",
+                                    border: "2px solid gray",
+                                    padding: "3px",
                                     backgroundColor: "white"
                                 },
                             },

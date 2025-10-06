@@ -7,6 +7,8 @@ const DashboardLayout = ({
 }: {
     children: React.ReactNode;
 }) => {
+
+        
     return ( 
         <div className="relative">
             <NavBar /> 

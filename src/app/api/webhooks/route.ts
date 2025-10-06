@@ -1,7 +1,6 @@
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
 import createUser from '../../../../prisma/post/create-user'
-import { use } from 'react'
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,7 +14,7 @@ export async function POST(req: NextRequest) {
             imageUrl: evt.data.image_url ?? null,
         }
 
-        console.log(use)
+        console.log(user)
 
         await createUser(user);
     }

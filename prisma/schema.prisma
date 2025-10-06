@@ -15,18 +15,107 @@ datasource db {
 }
 
 model user {
-  id        Int       @id @default(autoincrement())
-  clerkId   String
-  email     String    @unique    
-  username  String?    @unique
-  imageUrl  String?
+  id                  Int           @id @default(autoincrement())
+  clerkId             String
+  email               String        @unique    
+  username            String?       @unique
+  imageUrl            String?
+
+  posts               post[]
+  comments            comment[]
+
+  reactions PostReaction[]
+
+  friendshipsSent     Friendship[]  @relation("FriendshipSender")
+  friendshipsReceived Friendship[]  @relation("FriendshipReceiver")
+
+  messagesSend        message[]     @relation("messagesSender")
+  messagesRecieved    message[]     @relation("meesagesReciever")
+}
+
+model Friendship {
+  id                Int             @id @default(autoincrement())
+  sender            user            @relation("FriendshipSender", fields: [senderId], references: [id])
+  senderId          Int
+  receiver          user            @relation("FriendshipReceiver", fields: [receiverId], references: [id])
+  receiverId        Int
+  status            StatusType 
+  createdAt         DateTime         @default(now())
+  chat              messageChat?    
+
+  @@unique([senderId, receiverId])
 }
 
 model post {
-  id                Int       @id @default(autoincrement())
+  id                Int         @id @default(autoincrement())
   content           String
-  date              DateTime  @default(now())
+  date              DateTime    @default(now())
 
-  likesCount        Int       @default(0)
-  commentCount      Int       @default(0)
+  likesCount        Int         @default(0)
+  commentCount      Int         @default(0)
+  comments          comment[]   
+
+  author            user        @relation(fields: [authorId], references: [id])
+  authorId          Int
+
+  reactions    PostReaction[]       
+}
+
+model comment {
+  id                Int         @id @default(autoincrement())
+  text              String
+  date              DateTime    @default(now())
+
+  post              post        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId            Int 
+
+  author            user         @relation(fields: [authorId], references: [id])
+  authorId          Int 
+}
+
+model PostReaction {
+  id      Int   @id @default(autoincrement())
+
+  user    user  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  Int
+
+  post    post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId  Int
+
+  type    ReactionType
+
+  @@unique([userId, postId])
+}
+
+model message {
+  id                Int             @id @default(autoincrement())
+  text              String
+  date              DateTime        @default(now())
+
+  sender            user            @relation("messagesSender",fields: [senderId], references: [id], onDelete: Cascade)
+  senderId          Int
+
+  reciever          user            @relation("meesagesReciever",fields: [recieverId], references: [id], onDelete: Cascade)
+  recieverId        Int 
+
+  chat              messageChat     @relation(fields: [messageChatId], references: [id])
+  messageChatId     Int
+}
+
+model messageChat {
+  id                Int             @id @default(autoincrement())
+  messages          message[]
+
+  friendship        Friendship      @relation(fields: [friendshipId], references: [id], onDelete: Cascade)
+  friendshipId      Int             @unique
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+}
+
+enum StatusType {
+  pending
+  friends
 }
