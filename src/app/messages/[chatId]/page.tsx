@@ -14,13 +14,11 @@ import createMessage from "../../../../prisma/post/create-message";
 import { redirect } from "next/navigation";
 
 interface ChatProps {
-params: {
-    chatId: { chatId: string };
-    }
+params: Promise<{ chatId: string }>;
 }
 
 const Chat = async({ params }: ChatProps) => {
-    const { chatId } = await Promise.resolve(params);
+    const { chatId } = await params;
 
     const user = await currentUser();
 
