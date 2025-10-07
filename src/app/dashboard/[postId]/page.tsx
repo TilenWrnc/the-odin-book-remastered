@@ -21,13 +21,11 @@ import getUserReaction from "../../../../prisma/get/get-user-reaction";
 import getUser from "../../../../prisma/get/get-user";
 
 interface SinglePostProps {
-    params: {
-        postId: string;
-    }
+    params: Promise<{ postId: string }>
 }
 
 const SinglePost = async({ params } : SinglePostProps) => {
-    const { postId } = params;
+    const { postId } = await params;
     const post = await getSinglePost(Number(postId));
     const user = await currentUser();
 
