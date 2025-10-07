@@ -10,7 +10,7 @@ export const getAllPosts = async() => {
                 date: "desc"
             }
         });
-        return allPosts;
+        return allPosts || [];
     } catch (error) {
         throw new Error("Cannot find posts")
     }
