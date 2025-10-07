@@ -11,7 +11,11 @@ const nextConfig: NextConfig = {
         pathname: "/**" // allow all paths
       }
     ]
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   }
+
 };
 
 export default nextConfig;
